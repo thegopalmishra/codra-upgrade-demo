@@ -2,12 +2,12 @@
 
 # This project is based on  
 
- * (CorDapp Template - Java)[https://github.com/corda/cordapp-template-java] 
- * (Corda Invoice - POC)[https://github.com/thegopalmishra/corda-invoice-poc]
+ * [CorDapp Template - Java](https://github.com/corda/cordapp-template-java)
+ * [Corda Invoice - POC](https://github.com/thegopalmishra/corda-invoice-poc)
 
 # Pre-Requisites
 
-1. See https://docs.corda.net/getting-set-up.html.
+1. See [Getting started with corda](https://docs.corda.net/getting-set-up.html)
 2. You should have running corda-invoice-poc
 
 # Getting Ready
