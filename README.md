@@ -1,142 +1,71 @@
-<p align="center">
-  <img src="https://www.corda.net/wp-content/uploads/2016/11/fg005_corda_b.png" alt="Corda" width="500">
-</p>
+# Invoice CorDapp (Upgrade Corda to 4.5 from 4.0)
 
-# CorDapp Template - Java [<img src="https://raw.githubusercontent.com/corda/samples-java/master/webIDE.png" height=25 />](https://ide.corda.net/?folder=/home/coder/cordapp-template-java)
+# This project is based on  
 
-Welcome to the Java CorDapp template. The CorDapp template is a stubbed-out CorDapp that you can use to bootstrap 
-your own CorDapps.
-
-**This is the Java version of the CorDapp template. The Kotlin equivalent is 
-[here](https://github.com/corda/cordapp-template-kotlin/).**
+ * (CorDapp Template - Java)[https://github.com/corda/cordapp-template-java] 
+ * (Corda Invoice - POC)[https://github.com/thegopalmishra/corda-invoice-poc]
 
 # Pre-Requisites
 
-See https://docs.corda.net/getting-set-up.html.
+1. See https://docs.corda.net/getting-set-up.html.
+2. You should have running corda-invoice-poc
 
-# Usage
+# Getting Ready
 
-## Running tests inside IntelliJ
-	
-We recommend editing your IntelliJ preferences so that you use the Gradle runner - this means that the quasar utils
-plugin will make sure that some flags (like ``-javaagent`` - see below) are
-set for you.
-
-To switch to using the Gradle runner:
-
-* Navigate to ``Build, Execution, Deployment -> Build Tools -> Gradle -> Runner`` (or search for `runner`)
-  * Windows: this is in "Settings"
-  * MacOS: this is in "Preferences"
-* Set "Delegate IDE build/run actions to gradle" to true
-* Set "Run test using:" to "Gradle Test Runner"
-
-If you would prefer to use the built in IntelliJ JUnit test runner, you can run ``gradlew installQuasar`` which will
-copy your quasar JAR file to the lib directory. You will then need to specify ``-javaagent:lib/quasar.jar``
-and set the run directory to the project root directory for each test.
-
-## Running the nodes
-
-See https://docs.corda.net/tutorial-cordapp.html#running-the-example-cordapp.
-
-## Interacting with the nodes
-
-### Shell
-
-When started via the command line, each node will display an interactive shell:
-
-    Welcome to the Corda interactive shell.
-    Useful commands include 'help' to see what is available, and 'bye' to shut down the node.
-    
-    Tue Nov 06 11:58:13 GMT 2018>>>
-
-You can use this shell to interact with your node. For example, enter `run networkMapSnapshot` to see a list of 
-the other nodes on the network:
-
-    Tue Nov 06 11:58:13 GMT 2018>>> run networkMapSnapshot
-    [
-      {
-      "addresses" : [ "localhost:10002" ],
-      "legalIdentitiesAndCerts" : [ "O=Notary, L=London, C=GB" ],
-      "platformVersion" : 3,
-      "serial" : 1541505484825
-    },
-      {
-      "addresses" : [ "localhost:10005" ],
-      "legalIdentitiesAndCerts" : [ "O=PartyA, L=London, C=GB" ],
-      "platformVersion" : 3,
-      "serial" : 1541505382560
-    },
-      {
-      "addresses" : [ "localhost:10008" ],
-      "legalIdentitiesAndCerts" : [ "O=PartyB, L=New York, C=US" ],
-      "platformVersion" : 3,
-      "serial" : 1541505384742
+* Move your invoice state, contract and workflows to below folders
+  ** Add your own state definitions under `contracts/src/main/java/com/template/states`
+  ** Add your own contract definitions under `contracts/src/main/java/com/template/contracts`
+  ** Add your own flow definitions under `workflows/src/main/java/com/template/`
+  ** Extend or replace the client and webserver under `clients/src/main/java/com/template/webserver` (optional)
+* Update the package names for the above files.
+* Update the value of ID in the contract class which is fully qualified class name of the contract class itself
+* Add your contracts and workflows inside the `cordapp { }` in `build.gradle` of respective modules
+For contract
+````
+    contract {
+        name "Invoice Contracts"
+        vendor "R3"
+        licence "A liberal, open source licence"
+        versionId 1
     }
-    ]
-    
-    Tue Nov 06 12:30:11 GMT 2018>>> 
+````
+and for workflows 
+````
+    workflow {
+        name "Invoice Flows"
+        vendor "R3"
+        licence "A really expensive proprietary licence"
+        versionId 1
+    }
+````
+* Update the cordapp dependancy and platform version to 4.0 and 4 respectively (this will make sure that we build our app in 4.0)
+* Below is the Corda release vs platform version chart
 
-You can find out more about the node shell [here](https://docs.corda.net/shell.html).
+| Corda release | Platform version |
+|---------------|------------------|
+| 4.5           | 7                |
+| 4.4           | 6                |
+| 4.3           | 5                |
+| 4.2           | 4                |
+| 4.1           | 4                |
+| 4.0           | 4                |
+| 3.3           | 3                |
+	    
+* Now reload gradle changes from the gradle menu in Intellij or by `gradlew --referesh-dependancies`
+* After dependancies are reolved build the project using `gradlew clean deployNodes` from the root directory
+* Start the nodes by running `"build/nodes/runnodes.bat"`
+* Perform transaction as mentioned in invoice poc or by using below command on PartyB node shell
+`start Invoice owner: PartyA, payTermDescription: AA, currencyCode: INR, invoiceTransactionType: CASH, policyNumber: 12345,coverageCode: 1, coverageName: CN, policyEventType: BASE, installmentDueDate: 2020-06-12, invoiceNumber: 123, invoiceLineNumber: 1, financialTransactionCode: ABC, financialTransactionAmt: 500, apStatus: Pass, payToID: abc, payeeName: ABC, invoiceTransactionID: ABC123`
+* Once the transaction is successful you can check it using the vault query by executing `run vaultQuery contractStateType: com.template.states.InvoiceState`
+* Drain all the nodes by shutting them down gracefully by executing `run gracefulShutdown` on node shells
+* Download the corda-4.5.jar from (MVN Repository)[]
+* Replace the corda.jar in `build/nodes/*` for all the nodes (Where * is the node name).
+* Start the nodes again by running `"build/nodes/runnodes.bat"`
+* Undrain all the nodes by executing `run setFlowsDrainingModeEnabled enabled: false` on node shells
+* Do vault query and check whether previouslt created transaction is present.
+* Upgrade is successful if you can see the transaction without errors.
 
-### Client
 
-`clients/src/main/java/com/template/Client.java` defines a simple command-line client that connects to a node via RPC 
-and prints a list of the other nodes on the network.
+** Credits: Corda Bootcamp and Corda Documentation
 
-#### Running the client
 
-##### Via the command line
-
-Run the `runTemplateClient` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
-the username `user1` and the password `test`.
-
-##### Via IntelliJ
-
-Run the `Run Template Client` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
-with the username `user1` and the password `test`.
-
-### Webserver
-
-`clients/src/main/java/com/template/webserver/` defines a simple Spring webserver that connects to a node via RPC and 
-allows you to interact with the node over HTTP.
-
-The API endpoints are defined here:
-
-     clients/src/main/java/com/template/webserver/Controller.java
-
-And a static webpage is defined here:
-
-     clients/src/main/resources/static/
-
-#### Running the webserver
-
-##### Via the command line
-
-Run the `runTemplateServer` Gradle task. By default, it connects to the node with RPC address `localhost:10006` with 
-the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
-
-##### Via IntelliJ
-
-Run the `Run Template Server` run configuration. By default, it connects to the node with RPC address `localhost:10006` 
-with the username `user1` and the password `test`, and serves the webserver on port `localhost:10050`.
-
-#### Interacting with the webserver
-
-The static webpage is served on:
-
-    http://localhost:10050
-
-While the sole template endpoint is served on:
-
-    http://localhost:10050/templateendpoint
-    
-# Extending the template
-
-You should extend this template as follows:
-
-* Add your own state and contract definitions under `contracts/src/main/java/`
-* Add your own flow definitions under `workflows/src/main/java/`
-* Extend or replace the client and webserver under `clients/src/main/java/`
-
-For a guided example of how to extend this template, see the Hello, World! tutorial 
-[here](https://docs.corda.net/hello-world-introduction.html).
