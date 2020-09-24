@@ -39,7 +39,7 @@ For workflows
         versionId 1
     }
 ````
-* Update the cordapp dependancy and platform version to 4.0 and 4 respectively (this will make sure that we build our app in 4.0)
+* Update the cordapp dependancy and platform version to 4.0 and 4 respectively in `constants.properties` (this will make sure that we build our app in 4.0)
 * Below is the Corda release vs platform version chart
 
 | Corda release | Platform version |
