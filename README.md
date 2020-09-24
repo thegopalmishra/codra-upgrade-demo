@@ -13,13 +13,14 @@
 # Getting Ready
 
 * Move your invoice state, contract and workflows to below folders
-  ** Add your own state definitions under `contracts/src/main/java/com/template/states`
-  ** Add your own contract definitions under `contracts/src/main/java/com/template/contracts`
-  ** Add your own flow definitions under `workflows/src/main/java/com/template/`
-  ** Extend or replace the client and webserver under `clients/src/main/java/com/template/webserver` (optional)
+  - Add your own state definitions under `contracts/src/main/java/com/template/states`
+  - Add your own contract definitions under `contracts/src/main/java/com/template/contracts`
+  - Add your own flow definitions under `workflows/src/main/java/com/template/`
+  - Extend or replace the client and webserver under `clients/src/main/java/com/template/webserver` (optional)
 * Update the package names for the above files.
 * Update the value of ID in the contract class which is fully qualified class name of the contract class itself
 * Add your contracts and workflows inside the `cordapp { }` in `build.gradle` of respective modules
+
 For contract
 ````
     contract {
@@ -29,7 +30,7 @@ For contract
         versionId 1
     }
 ````
-and for workflows 
+For workflows 
 ````
     workflow {
         name "Invoice Flows"
