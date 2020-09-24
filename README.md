@@ -18,7 +18,7 @@
   - Add your own flow definitions under `workflows/src/main/java/com/template/`
   - Extend or replace the client and webserver under `clients/src/main/java/com/template/webserver` (optional)
 * Update the package names for the above files.
-* Update the value of ID in the contract class which is fully qualified class name of the contract class itself
+* Update the value of ID `public static String ID = "com.template.contracts.InvoiceContract";` in the contract class which is fully qualified class name of the contract class itself
 * Add your contracts and workflows inside the `cordapp { }` in `build.gradle` of respective modules
 
 For contract
