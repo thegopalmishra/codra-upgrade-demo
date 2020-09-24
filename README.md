@@ -43,14 +43,14 @@ For workflows
 * Below is the Corda release vs platform version chart
 
 | Corda release | Platform version |
-|---------------|------------------|
-| 4.5           | 7                |
-| 4.4           | 6                |
-| 4.3           | 5                |
-| 4.2           | 4                |
-| 4.1           | 4                |
-| 4.0           | 4                |
-| 3.3           | 3                |
+|:-------------:|:----------------:|
+|      4.5      |         7        |
+|      4.4      |         6        |
+|      4.3      |         5        |
+|      4.2      |         4        |
+|      4.1      |         4        |
+|      4.0      |         4        |
+|      3.3      |         3        |
 	    
 * Now reload gradle changes from the gradle menu in Intellij or by `gradlew --referesh-dependancies`
 * After dependancies are reolved build the project using `gradlew clean deployNodes` from the root directory
