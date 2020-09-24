@@ -10,7 +10,7 @@ import net.corda.core.transactions.LedgerTransaction;
 import java.util.List;
 
 public class InvoiceContract implements Contract {
-    public static String ID = "invoice.InvoiceContract";
+    public static String ID = "com.template.contracts.InvoiceContract";
 
     public void verify(LedgerTransaction tx) throws IllegalArgumentException {
         List<ContractState> inputs = tx.getInputStates();
