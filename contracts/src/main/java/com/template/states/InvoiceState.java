@@ -32,8 +32,10 @@ public class InvoiceState implements ContractState{
     private final String payToID;
     private final String payeeName;
     private final String invoiceTransactionID;
+    private final String remarks;
 
-    public InvoiceState(Party issuer, Party owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID) {
+
+    public InvoiceState(Party issuer, Party owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID, String remarks) {
         this.issuer = issuer;
         this.owner = owner;
         this.payTermDescription = payTermDescription;
@@ -52,6 +54,7 @@ public class InvoiceState implements ContractState{
         this.payToID = payToID;
         this.payeeName = payeeName;
         this.invoiceTransactionID = invoiceTransactionID;
+        this.remarks = remarks;
     }
 
     public Party getIssuer() {
@@ -124,6 +127,10 @@ public class InvoiceState implements ContractState{
 
     public String getInvoiceTransactionID() {
         return invoiceTransactionID;
+    }
+
+    public String getRemarks() {
+        return remarks;
     }
 
     @NotNull
