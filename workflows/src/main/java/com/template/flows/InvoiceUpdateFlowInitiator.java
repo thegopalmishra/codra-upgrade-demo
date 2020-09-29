@@ -13,7 +13,9 @@ import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 import net.corda.core.contracts.CommandData;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 
@@ -39,10 +41,9 @@ public class InvoiceUpdateFlowInitiator extends FlowLogic<SignedTransaction> {
     private final String payeeName;
     private final String invoiceTransactionID;
     private final String remarks;
+    private final String prevStateId;
 
-    private final StateAndRef<InvoiceState> prevState;
-
-    public InvoiceUpdateFlowInitiator(CordaX500Name issuer, CordaX500Name owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID, String remarks, StateAndRef<InvoiceState> prevState) {
+    public InvoiceUpdateFlowInitiator(CordaX500Name issuer, CordaX500Name owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID, String remarks, String prevStateId) {
         this.issuer = issuer;
         this.owner = owner;
         this.payTermDescription = payTermDescription;
@@ -62,7 +63,7 @@ public class InvoiceUpdateFlowInitiator extends FlowLogic<SignedTransaction> {
         this.payeeName = payeeName;
         this.invoiceTransactionID = invoiceTransactionID;
         this.remarks = remarks;
-        this.prevState = prevState;
+        this.prevStateId = prevStateId;
     }
 
     private final ProgressTracker progressTracker = new ProgressTracker();
@@ -77,6 +78,33 @@ public class InvoiceUpdateFlowInitiator extends FlowLogic<SignedTransaction> {
     public SignedTransaction call() throws FlowException {
         // We choose our transaction's notary (the notary prevents double-spends).
         Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
+        /*
+        * Referred From Below URL
+        * @url: https://github.com/corda/samples/tree/release-V4/reference-states
+        * */
+//        StateAndRef<InvoiceState> prevState  = getServiceHub().getVaultService().queryBy(InvoiceState.class).getStates().get(0);
+//        InvoiceState prevStateData = prevState.getState().getData();
+
+        StateAndRef<InvoiceState>  prevState = null;
+        InvoiceState prevStateData = null;
+        try{
+            prevState = getServiceHub().getVaultService().
+                    queryBy(InvoiceState.class).getStates().stream()
+                    .filter(sf -> {
+                        System.out.print("Loop State Id: ");
+                        System.out.println(sf.getState().getData().getLinearId().getId());
+                        System.out.print("Previous State Id: ");
+                        System.out.println(prevStateId);
+                        return sf.getState().getData().getLinearId().getId().toString().equals(prevStateId);
+                    }).findAny()
+                    .orElseThrow(() -> new IllegalArgumentException("Old State Not Available"));
+            prevStateData = prevState.getState().getData();
+        }catch(IllegalArgumentException ex){
+            throw new IllegalArgumentException("Old State Not Available.");
+        }
+
+
+
         // We get a reference to our own identity.
         Party issuerParty = getIssuer();
         Party ownerParty = getOwner();
@@ -88,7 +116,7 @@ public class InvoiceUpdateFlowInitiator extends FlowLogic<SignedTransaction> {
         InvoiceState invoiceState = new InvoiceState(issuerParty, ownerParty, payTermDescription, currencyCode,
                 invoiceTransactionType, policyNumber, coverageCode, coverageName, policyEventType, installmentDueDate,
                 invoiceNumber, invoiceLineNumber, financialTransactionCode, financialTransactionAmt,
-                apStatus, payToID, payeeName, invoiceTransactionID, remarks);
+                apStatus, payToID, payeeName, invoiceTransactionID, remarks, prevStateData.getLinearId());
         CommandData commandData = new InvoiceContract.Commands.Update();
 
         /* ============================================================================

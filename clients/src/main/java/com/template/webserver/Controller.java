@@ -2,6 +2,7 @@ package com.template.webserver;
 
 import com.template.dto.TransactionDTO;
 import com.template.flows.InvoiceIssueFlowInitiator;
+import com.template.flows.InvoiceUpdateFlowInitiator;
 import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.messaging.CordaRPCOps;
@@ -30,14 +31,14 @@ public class Controller {
         this.proxy = rpc.proxy;
     }
 
-    @GetMapping(value = "/templateendpoint", produces = "text/plain")
+    @GetMapping(value = "/ping", produces = "text/plain")
     private String templateendpoint() {
-        return "Define an endpoint here.";
+        return "Running..";
     }
 
 
-    @PostMapping(value = "/transfererupeetokens" , produces =  APPLICATION_JSON_VALUE , headers =  "Content-Type=application/json" )
-    public ResponseEntity<String> transferERupeeTokens(@RequestBody TransactionDTO transactionDTO) throws IllegalArgumentException, ParseException {
+    @PostMapping(value = "/issueInvoice" , produces =  APPLICATION_JSON_VALUE , headers =  "Content-Type=application/json" )
+    public ResponseEntity<String> issueInvoice(@RequestBody TransactionDTO transactionDTO) throws IllegalArgumentException, ParseException {
 
         if(transactionDTO.getTransactionDetails() == null || transactionDTO.getTransactionDetails().equals("")){
             throw new IllegalArgumentException("Invalid arguments. Arguments cannot be empty or null");
@@ -90,6 +91,73 @@ public class Controller {
             // Return the response.
             String retString = "{\n" +
                     "  \"Transaction ID\" " + ":" + " \"" + result.getId() + "\" " +"\n" +
+                    "}";
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(retString);
+            // For the purposes of this demo app, we do not differentiate by exception type.
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping(value = "/updateInvoice" , produces =  APPLICATION_JSON_VALUE , headers =  "Content-Type=application/json" )
+    public ResponseEntity<String> updateInvoice(@RequestBody TransactionDTO transactionDTO) throws IllegalArgumentException, ParseException {
+
+        if(transactionDTO.getTransactionDetails() == null || transactionDTO.getTransactionDetails().equals("")
+               || transactionDTO.getPrevStateId() == null || transactionDTO.getPrevStateId().equals("")
+        ){
+            throw new IllegalArgumentException("Invalid arguments. Arguments cannot be empty or null");
+        }
+
+        String ownerName = transactionDTO.getTransactionDetails().getOwner();
+        String issuerName = transactionDTO.getTransactionDetails().getIssuer();
+        System.out.println(issuerName);
+        System.out.println(ownerName);
+////
+        CordaX500Name ownerPartyX500Name = CordaX500Name.parse(getPartyX500String(ownerName));
+//        Party ownerParty = proxy.wellKnownPartyFromX500Name(ownerPartyX500Name);
+
+        CordaX500Name issuerPartyX500Name = CordaX500Name.parse(getPartyX500String(issuerName));
+//        Party issuerParty = proxy.wellKnownPartyFromX500Name(issuerPartyX500Name);
+
+//        System.out.println(ownerParty);
+//        System.out.println(issuerParty);
+
+        // Do Transaction
+        try {
+            // Start the InvoiceIssueFlowInitiator.
+            SignedTransaction result
+                    = proxy.startTrackedFlowDynamic(InvoiceUpdateFlowInitiator.class,
+                    issuerPartyX500Name,
+                    ownerPartyX500Name,
+                    transactionDTO.getTransactionDetails().getPayTermDescription(),
+                    transactionDTO.getTransactionDetails().getCurrencyCode(),
+                    transactionDTO.getTransactionDetails().getInvoiceTransactionType(),
+                    transactionDTO.getTransactionDetails().getPolicyNumber(),
+                    transactionDTO.getTransactionDetails().getCoverageCode(),
+                    transactionDTO.getTransactionDetails().getCoverageName(),
+                    transactionDTO.getTransactionDetails().getPolicyEventType(),
+                    transactionDTO.getTransactionDetails().getInstallmentDueDate(),
+                    transactionDTO.getTransactionDetails().getInvoiceNumber(),
+                    transactionDTO.getTransactionDetails().getInvoiceLineNumber(),
+                    transactionDTO.getTransactionDetails().getFinancialTransactionCode(),
+                    transactionDTO.getTransactionDetails().getFinancialTransactionAmt(),
+                    transactionDTO.getTransactionDetails().getApStatus(),
+                    transactionDTO.getTransactionDetails().getPayToID(),
+                    transactionDTO.getTransactionDetails().getPayeeName(),
+                    transactionDTO.getTransactionDetails().getInvoiceTransactionID(),
+                    transactionDTO.getTransactionDetails().getRemarks(),
+                    transactionDTO.getPrevStateId()
+            )
+                    .getReturnValue().get();
+            // Return the response.
+            String retString = "{\n" +
+                    "  \"Transaction ID\" " + ":" + " \"" + result.getId() + "\" " +"\n" +
+                    "  \"Previous State ID\" " + ":" + " \"" + transactionDTO.getPrevStateId() + "\" " +"\n" +
                     "}";
             return ResponseEntity
                     .status(HttpStatus.OK)

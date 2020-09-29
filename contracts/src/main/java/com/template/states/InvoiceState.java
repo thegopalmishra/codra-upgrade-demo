@@ -4,8 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.template.contracts.InvoiceContract;
 import net.corda.core.contracts.BelongsToContract;
 import net.corda.core.contracts.ContractState;
+import net.corda.core.contracts.LinearState;
+import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.identity.AbstractParty;
 import net.corda.core.identity.Party;
+import net.corda.core.serialization.ConstructorForDeserialization;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -13,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @BelongsToContract(InvoiceContract.class)
-public class InvoiceState implements ContractState{
+public class InvoiceState implements LinearState {
     private final Party issuer;
     private final Party owner;
     private final String payTermDescription;
@@ -33,6 +36,31 @@ public class InvoiceState implements ContractState{
     private final String payeeName;
     private final String invoiceTransactionID;
     private final String remarks;
+    private final UniqueIdentifier linearId;
+
+    @ConstructorForDeserialization
+    public InvoiceState(Party issuer, Party owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID, String remarks, UniqueIdentifier linearId) {
+        this.issuer = issuer;
+        this.owner = owner;
+        this.payTermDescription = payTermDescription;
+        this.currencyCode = currencyCode;
+        this.invoiceTransactionType = invoiceTransactionType;
+        this.policyNumber = policyNumber;
+        this.coverageCode = coverageCode;
+        this.coverageName = coverageName;
+        this.policyEventType = policyEventType;
+        this.installmentDueDate = installmentDueDate;
+        this.invoiceNumber = invoiceNumber;
+        this.invoiceLineNumber = invoiceLineNumber;
+        this.financialTransactionCode = financialTransactionCode;
+        this.financialTransactionAmt = financialTransactionAmt;
+        this.apStatus = apStatus;
+        this.payToID = payToID;
+        this.payeeName = payeeName;
+        this.invoiceTransactionID = invoiceTransactionID;
+        this.remarks = remarks;
+        this.linearId = linearId;
+    }
 
 
     public InvoiceState(Party issuer, Party owner, String payTermDescription, String currencyCode, String invoiceTransactionType, int policyNumber, int coverageCode, String coverageName, String policyEventType, Date installmentDueDate, int invoiceNumber, int invoiceLineNumber, String financialTransactionCode, int financialTransactionAmt, String apStatus, String payToID, String payeeName, String invoiceTransactionID, String remarks) {
@@ -55,6 +83,7 @@ public class InvoiceState implements ContractState{
         this.payeeName = payeeName;
         this.invoiceTransactionID = invoiceTransactionID;
         this.remarks = remarks;
+        this.linearId = new UniqueIdentifier();
     }
 
     public Party getIssuer() {
@@ -138,5 +167,11 @@ public class InvoiceState implements ContractState{
     public List<AbstractParty> getParticipants() {
 //        return Arrays.asList(issuer, owner);
         return ImmutableList.of(issuer, owner);
+    }
+
+    @NotNull
+    @Override
+    public UniqueIdentifier getLinearId() {
+        return linearId;
     }
 }

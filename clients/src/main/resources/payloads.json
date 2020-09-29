@@ -1,0 +1,63 @@
+[
+  {
+    "endpoint": "/issueInvoice",
+    "queries": {
+      "vaultQuery": "run vaultQuery contractStateType: com.template.states.InvoiceState",
+      "initiateTransaction": "start InvoiceIssueFlowInitiator issuer: 'O=PartyA,L=London,C=GB', owner: 'O=PartyB,L=New York,C=US', payTermDescription: AA, currencyCode: INR, invoiceTransactionType: CASH, policyNumber: 1,coverageCode: 1, coverageName: CN, policyEventType: BASE, installmentDueDate: 2020-06-12, invoiceNumber: 1, invoiceLineNumber: 1, financialTransactionCode: ABC, financialTransactionAmt: 100, apStatus: Pass, payToID: abc, payeeName: Gopal, invoiceTransactionID: A100, remarks: TestUpdated"
+    },
+    "payload": {
+      "transactionDetails" : {
+        "issuer": "PartyA",
+        "owner": "PartyB",
+        "payTermDescription": "BB",
+        "currencyCode": "INR",
+        "invoiceTransactionType": "CASH",
+        "policyNumber": 1,
+        "coverageCode": 1,
+        "coverageName": "CN",
+        "policyEventType": "ROAD",
+        "installmentDueDate": "2020-09-12",
+        "invoiceNumber": 1,
+        "invoiceLineNumber": 1,
+        "financialTransactionCode": "DDD",
+        "financialTransactionAmt": 100,
+        "apStatus": "Pass",
+        "payToID": "abc",
+        "payeeName": "Postman",
+        "invoiceTransactionID": "A100",
+        "remarks": "Test1"
+      }
+    }
+  },
+  {
+    "endpoint": "/updateInvoice",
+    "queries": {
+      "vaultQuery": "run vaultQuery contractStateType: com.template.states.InvoiceState",
+      "initiateTransaction": "start InvoiceUpdateFlowInitiator issuer: 'O=PartyA,L=London,C=GB', owner: 'O=PartyB,L=New York,C=US', payTermDescription: AA, currencyCode: INR, invoiceTransactionType: CASH, policyNumber: 1,coverageCode: 1, coverageName: CN, policyEventType: BASE, installmentDueDate: 2020-06-12, invoiceNumber: 1, invoiceLineNumber: 1, financialTransactionCode: ABC, financialTransactionAmt: 150, apStatus: Pass, payToID: abc, payeeName: Gopal, invoiceTransactionID: A101, remarks: TestUpdated, prevStateId: 5b8e8e5e-ddfe-425e-bc2d-7ed8b4f98e0f"
+    },
+    "payload": {
+      "prevStateId":"5b8e8e5e-ddfe-425e-bc2d-7ed8b4f98e0f",
+      "transactionDetails" : {
+        "issuer": "PartyA",
+        "owner": "PartyB",
+        "payTermDescription": "BB",
+        "currencyCode": "INR",
+        "invoiceTransactionType": "CASH",
+        "policyNumber": 1,
+        "coverageCode": 1,
+        "coverageName": "CN",
+        "policyEventType": "ROAD",
+        "installmentDueDate": "2020-09-12",
+        "invoiceNumber": 1,
+        "invoiceLineNumber": 1,
+        "financialTransactionCode": "DDD",
+        "financialTransactionAmt": 170,
+        "apStatus": "Pass",
+        "payToID": "abc",
+        "payeeName": "Postman",
+        "invoiceTransactionID": "A100",
+        "remarks": "Test1"
+      }
+    }
+  }
+]

@@ -104,6 +104,15 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters" // Required for shell commands.
 }
 
+task runnodes(type: Exec) {
+    workingDir "$projectDir/build/nodes"
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'runnodes.bat'
+    } else {
+        commandLine 'sh', '-c', 'runnodes'
+    }
+}
+
 //Task to deploy the nodes in order to bootstrap a network
 task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
 
