@@ -179,6 +179,9 @@ public class Controller {
             case "PartyB":
                 partyX500String = "O=PartyB,L=New York,C=US";
                 break;
+            case "PartyC":
+                partyX500String = "O=PartyC,L=India,C=GB";
+                break;
             case "Notary":
                 partyX500String = "O=Notary,L=London,C=GB";
                 break;
